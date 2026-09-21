@@ -165,7 +165,7 @@
       mem.currentPhotoIndex = photoIndex;
 
       const currentImgUrl = mem.images[photoIndex] || '';
-      if (img) img.src = currentImgUrl;
+      if (img) img.src = encodeURI(currentImgUrl);
       if (title) title.textContent = mem.title;
       if (date) date.textContent = mem.date;
       if (loc) loc.innerHTML = `<span>📍</span> <span>${mem.location}</span>`;
@@ -189,7 +189,7 @@
                 ? 'border-romance-gold scale-110 shadow-md shadow-black/80 opacity-100 ring-2 ring-amber-300/30'
                 : 'border-white/30 hover:border-white/70 opacity-60 hover:opacity-100'
             }`;
-            thumbBtn.innerHTML = `<img src="${imgUrl}" alt="Foto ${pIdx + 1}" class="w-full h-full object-cover" />`;
+            thumbBtn.innerHTML = `<img src="${encodeURI(imgUrl)}" alt="Foto ${pIdx + 1}" class="w-full h-full object-cover" />`;
             thumbBtn.addEventListener('click', (e) => {
               e.stopPropagation();
               renderSlide(currentIndex, pIdx);

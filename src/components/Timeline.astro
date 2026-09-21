@@ -58,11 +58,12 @@ const { timeline } = storyData;
                 <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/40 backdrop-blur-sm border border-white/50 shadow-sm rotate-[-1deg] pointer-events-none z-20"></div>
 
                 <!-- Contenedor de la Fotografía -->
-                <div class="relative overflow-hidden aspect-[4/5] bg-gray-100 rounded-[2px] mb-4 group/img">
+                <div class="relative overflow-hidden aspect-[4/5] min-h-[250px] sm:min-h-[280px] bg-stone-100 rounded-[2px] mb-4 group/img">
                   <img
-                    src={firstImage}
+                    src={encodeURI(firstImage)}
                     alt={item.title}
-                    loading="lazy"
+                    loading={index < 3 ? "eager" : "lazy"}
+                    decoding="async"
                     class="polaroid-photo-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
 
@@ -199,7 +200,7 @@ const { timeline } = storyData;
         if (newIdx < 0) newIdx = images.length - 1;
         if (newIdx >= images.length) newIdx = 0;
         currentPhotoIdx = newIdx;
-        if (img) img.src = images[currentPhotoIdx];
+        if (img) img.src = encodeURI(images[currentPhotoIdx]);
         if (countSpan) countSpan.textContent = `${currentPhotoIdx + 1}/${images.length}`;
         wrapper.dataset.image = images[currentPhotoIdx];
         wrapper.dataset.currentPhoto = String(currentPhotoIdx);
