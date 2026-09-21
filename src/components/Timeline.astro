@@ -1,0 +1,230 @@
+---
+import { storyData } from '../data/story';
+
+const { timeline } = storyData;
+---
+
+<section id="momentos" class="py-24 px-4 sm:px-6 lg:px-8 relative z-10">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Encabezado de la Galería -->
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="text-xs uppercase tracking-[0.3em] text-romance-gold font-medium block mb-2">
+        Nuestra Línea del Tiempo
+      </span>
+      <h2 class="font-serif text-3xl sm:text-5xl text-white font-normal mb-4">
+        {timeline.title}
+      </h2>
+      <p class="text-sm sm:text-base text-romance-blush/70 font-light">
+        {timeline.subtitle}
+      </p>
+    </div>
+
+    <!-- Grid de Tarjetas Polaroid con estilo 3D y notas a mano -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 perspective-1000">
+      {
+        timeline.memories.map((item, index) => {
+          const images = (item.images && item.images.length > 0)
+            ? item.images
+            : (item.image ? [item.image] : []);
+          const firstImage = images[0] || '';
+          const hasMultiple = images.length > 1;
+
+          return (
+            <div
+              class="polaroid-wrapper group cursor-pointer transition-all duration-500 ease-out relative"
+              data-index={index}
+              data-title={item.title}
+              data-date={item.date}
+              data-location={item.location}
+              data-note={item.note}
+              data-image={firstImage}
+              data-images={JSON.stringify(images)}
+              style={`--initial-rotation: ${item.rotation || 0}deg;`}
+            >
+              <!-- Efecto de fotos apiladas detrás si tiene más de una foto -->
+              {hasMultiple && (
+                <div 
+                  class="absolute inset-0 bg-[#fbf8f2] rounded-sm shadow-md border border-amber-950/10 pointer-events-none transition-transform duration-500 group-hover:rotate-[5deg] group-hover:translate-x-2 group-hover:translate-y-2 z-0"
+                  style={`transform: rotate(${(item.rotation || 0) + 3}deg) translate(4px, 4px);`}
+                ></div>
+              )}
+
+              <div
+                class="polaroid-card relative bg-[#fffdf9] text-gray-900 p-4 sm:p-5 pb-7 rounded-sm shadow-polaroid group-hover:shadow-polaroid-hover transition-transform duration-500 ease-out will-change-transform border border-amber-950/10 z-10"
+                style={`transform: rotate(${item.rotation || 0}deg);`}
+              >
+                <!-- Cinta adhesiva decorativa realista en la parte superior -->
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/40 backdrop-blur-sm border border-white/50 shadow-sm rotate-[-1deg] pointer-events-none z-20"></div>
+
+                <!-- Contenedor de la Fotografía -->
+                <div class="relative overflow-hidden aspect-[4/5] bg-gray-100 rounded-[2px] mb-4 group/img">
+                  <img
+                    src={firstImage}
+                    alt={item.title}
+                    loading="lazy"
+                    class="polaroid-photo-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+
+                  <!-- Filtro de grano / película suave -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 opacity-40 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
+
+                  <!-- Badge flotante con fecha en la foto -->
+                  <div class="absolute top-2.5 right-2.5 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full text-[10px] tracking-wider uppercase text-white/90 border border-white/20 pointer-events-none z-10">
+                    {item.date}
+                  </div>
+
+                  <!-- Badge si hay varias fotos -->
+                  {hasMultiple && (
+                    <div class="absolute top-2.5 left-2.5 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full text-[10px] tracking-wider font-medium text-amber-200 border border-amber-200/30 flex items-center gap-1 z-10 pointer-events-none shadow-sm">
+                      <span>📸</span>
+                      <span class="photo-indicator-count">1/{images.length}</span>
+                    </div>
+                  )}
+
+                  <!-- Controles para cambiar de foto directamente en la polaroid -->
+                  {hasMultiple && (
+                    <div class="absolute inset-x-2 bottom-3 flex items-center justify-between z-20 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                      <button
+                        type="button"
+                        class="card-prev-photo p-1.5 rounded-full bg-black/70 hover:bg-black/90 text-white backdrop-blur-md transition-all hover:scale-110 shadow-lg border border-white/20"
+                        aria-label="Foto anterior"
+                      >
+                        <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="card-next-photo p-1.5 rounded-full bg-black/70 hover:bg-black/90 text-white backdrop-blur-md transition-all hover:scale-110 shadow-lg border border-white/20"
+                        aria-label="Foto siguiente"
+                      >
+                        <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+
+                  <!-- Icono de Zoom al pasar el cursor -->
+                  <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 backdrop-blur-[1px] pointer-events-none">
+                    <span class="p-2.5 rounded-full bg-white/90 text-romance-wine shadow-lg transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Pie de la Polaroid con caligrafía elegante -->
+                <div class="space-y-1 text-center">
+                  <h3 class="font-serif text-lg text-stone-900 font-semibold leading-tight">
+                    {item.title}
+                  </h3>
+                  <p class="text-[11px] uppercase tracking-wider text-stone-500 font-sans">
+                    📍 {item.location}
+                  </p>
+                  
+                  <!-- Nota manuscrita tipo dedicatoria con fuente manuscrita -->
+                  <p class="pt-2 font-handwriting text-xl text-romance-burgundy leading-snug line-clamp-2 sm:line-clamp-3">
+                    "{item.note}"
+                  </p>
+                </div>
+
+                <!-- Etiqueta táctil para móviles -->
+                <div class="mt-3 text-center sm:hidden">
+                  <span class="text-[9px] uppercase tracking-widest text-stone-400">Toca para ampliar</span>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // 3D Tilt Effect interactivo en mousemove
+  function initPolaroidTilt() {
+    const cards = document.querySelectorAll('.polaroid-wrapper') as NodeListOf<HTMLElement>;
+
+    cards.forEach((wrapper) => {
+      const card = wrapper.querySelector('.polaroid-card') as HTMLElement;
+      if (!card) return;
+
+      const baseRotationStr = wrapper.style.getPropertyValue('--initial-rotation') || '0deg';
+      const baseRotation = parseFloat(baseRotationStr) || 0;
+
+      wrapper.addEventListener('mousemove', (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${baseRotation}deg) translateY(-8px) scale(1.03)`;
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) rotate(${baseRotation}deg) translateY(0px) scale(1)`;
+      });
+    });
+  }
+
+  // Manejo de cambio de fotos en tarjetas con múltiples imágenes
+  function initCardPhotoCarousels() {
+    const wrappers = document.querySelectorAll('.polaroid-wrapper') as NodeListOf<HTMLElement>;
+    wrappers.forEach((wrapper) => {
+      let images: string[] = [];
+      try {
+        images = JSON.parse(wrapper.dataset.images || '[]');
+      } catch (e) {
+        if (wrapper.dataset.image) images = [wrapper.dataset.image];
+      }
+      if (images.length <= 1) return;
+
+      let currentPhotoIdx = 0;
+      const img = wrapper.querySelector('.polaroid-photo-img') as HTMLImageElement;
+      const countSpan = wrapper.querySelector('.photo-indicator-count') as HTMLElement;
+      const prevBtn = wrapper.querySelector('.card-prev-photo') as HTMLButtonElement;
+      const nextBtn = wrapper.querySelector('.card-next-photo') as HTMLButtonElement;
+
+      function updateCardPhoto(newIdx: number) {
+        if (newIdx < 0) newIdx = images.length - 1;
+        if (newIdx >= images.length) newIdx = 0;
+        currentPhotoIdx = newIdx;
+        if (img) img.src = images[currentPhotoIdx];
+        if (countSpan) countSpan.textContent = `${currentPhotoIdx + 1}/${images.length}`;
+        wrapper.dataset.image = images[currentPhotoIdx];
+        wrapper.dataset.currentPhoto = String(currentPhotoIdx);
+      }
+
+      prevBtn?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita abrir el Lightbox al cambiar foto
+        updateCardPhoto(currentPhotoIdx - 1);
+      });
+
+      nextBtn?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita abrir el Lightbox al cambiar foto
+        updateCardPhoto(currentPhotoIdx + 1);
+      });
+    });
+  }
+
+  function setup() {
+    initPolaroidTilt();
+    initCardPhotoCarousels();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
+</script>

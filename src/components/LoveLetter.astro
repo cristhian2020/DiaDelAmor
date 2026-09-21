@@ -1,0 +1,210 @@
+---
+import { storyData } from '../data/story';
+
+const { letter } = storyData;
+---
+
+<section id="carta" class="py-24 px-4 sm:px-6 lg:px-8 relative z-10">
+  <div class="max-w-4xl mx-auto text-center">
+    
+    <!-- Encabezado de la Carta -->
+    <div class="mb-12">
+      <span class="text-xs uppercase tracking-[0.3em] text-romance-gold font-medium block mb-2">
+        Confesión Especial
+      </span>
+      <h2 class="font-serif text-3xl sm:text-5xl text-white font-normal mb-3">
+        {letter.title}
+      </h2>
+      <p class="text-sm sm:text-base text-romance-blush/70 font-light max-w-md mx-auto">
+        {letter.subtitle}
+      </p>
+    </div>
+
+    <!-- Escenario 3D del Sobre -->
+    <div class="relative max-w-md mx-auto perspective-1000 my-8">
+      <!-- Indicador de acción encima del sobre -->
+      <div id="envelope-prompt" class="mb-6 flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-romance-accent/80 font-medium animate-bounce">
+        <span>Toca el sello para abrir</span>
+        <span>↓</span>
+      </div>
+
+      <!-- El Sobre 3D -->
+      <div
+        id="envelope-container"
+        class="relative w-full aspect-[16/11] mx-auto cursor-pointer select-none transition-transform duration-700 ease-out hover:scale-105"
+      >
+        <!-- Cuerpo base del sobre (fondo oscuro vino terciopelo) -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#2a0815] to-[#1a040d] rounded-xl shadow-2xl border border-romance-gold/20 overflow-hidden">
+          <!-- Patrón decorativo en las esquinas -->
+          <div class="absolute inset-2 border border-romance-gold/10 rounded-lg pointer-events-none"></div>
+        </div>
+
+        <!-- Solapa triangular inferior del sobre -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+          <div class="absolute bottom-0 inset-x-0 h-1/2 bg-[#360d1d] [clip-path:polygon(0_100%,50%_0%,100%_100%)] border-t border-romance-rose/20 shadow-md"></div>
+          <!-- Solapas laterales -->
+          <div class="absolute inset-y-0 left-0 w-1/2 bg-[#2d0a18] [clip-path:polygon(0_0,100%_50%,0_100%)] border-r border-white/5"></div>
+          <div class="absolute inset-y-0 right-0 w-1/2 bg-[#2d0a18] [clip-path:polygon(100%_0,0_50%,100%_100%)] border-l border-white/5"></div>
+        </div>
+
+        <!-- Solapa superior plegable en 3D -->
+        <div
+          id="envelope-flap"
+          class="absolute top-0 inset-x-0 h-1/2 origin-top transition-transform duration-700 ease-in-out z-20 preserve-3d [clip-path:polygon(0_0,100%_0,50%_100%)] bg-gradient-to-b from-[#401225] to-[#310b1a] border-b border-romance-gold/30 shadow-lg"
+        ></div>
+
+        <!-- Sello de Cera Dorado / Rojo Borgoña -->
+        <div
+          id="wax-seal"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-[#6a152d] via-[#a82a4d] to-[#e0a96d] shadow-[0_4px_25px_rgba(168,42,77,0.7)] border-2 border-romance-accent cursor-pointer group-hover:scale-110 transition-transform duration-300"
+        >
+          <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-romance-accent/40 flex flex-col items-center justify-center text-center p-1">
+            <span class="text-xs sm:text-sm text-romance-cream">♥</span>
+            <span class="text-[8px] sm:text-[9px] uppercase tracking-wider font-serif text-romance-accent font-semibold leading-tight">
+              {letter.sealText}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carta Desplegada (Modal Inmersivo de Papel Pergamino / Marfil de Lujo) -->
+    <div
+      id="letter-modal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500"
+    >
+      <div
+        id="letter-sheet"
+        class="relative max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-[#faf6ee] text-[#2c1d18] p-8 sm:p-12 md:p-14 rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.8)] border border-[#d4af37]/40 transform scale-90 translate-y-10 transition-all duration-500 ease-out"
+      >
+        <!-- Textura y sellos de agua en la carta -->
+        <div class="absolute inset-3 border border-[#83223f]/15 rounded-xl pointer-events-none"></div>
+        <div class="absolute inset-5 border border-[#83223f]/10 rounded-lg pointer-events-none"></div>
+
+        <!-- Botón de Cerrar / Guardar en el sobre -->
+        <button
+          id="close-letter-btn"
+          class="absolute top-5 right-5 p-2 rounded-full bg-[#83223f]/10 hover:bg-[#83223f]/20 text-[#83223f] transition-colors"
+          aria-label="Cerrar carta"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- Cabecera de la Carta -->
+        <div class="text-center mb-8 border-b border-[#83223f]/15 pb-6">
+          <span class="font-serif italic text-xs tracking-widest text-[#83223f]/70 uppercase block mb-1">
+            {letter.date}
+          </span>
+          <h3 class="font-serif text-2xl sm:text-3xl text-[#5e1a30] font-normal">
+            {letter.to}
+          </h3>
+        </div>
+
+        <!-- Cuerpo de la Carta -->
+        <div class="space-y-4 font-serif text-base sm:text-lg text-[#3a2720] leading-relaxed text-justify sm:text-left">
+          {
+            letter.body.map((paragraph) => (
+              <p class="first-letter:text-3xl first-letter:font-serif first-letter:text-[#83223f] first-letter:font-bold">
+                {paragraph}
+              </p>
+            ))
+          }
+        </div>
+
+        <!-- Cierre y Firma -->
+        <div class="mt-10 pt-6 border-t border-[#83223f]/15 text-right font-serif">
+          <p class="text-sm italic text-[#6d4336] mb-1">{letter.closing}</p>
+          <p class="font-handwriting text-3xl sm:text-4xl text-[#83223f] font-semibold">
+            {letter.from}
+          </p>
+        </div>
+
+        <!-- Botón de acción al pie de la carta -->
+        <div class="mt-8 text-center">
+          <button
+            id="fold-letter-btn"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#83223f] hover:bg-[#5e1a30] text-[#faf6ee] text-xs uppercase tracking-widest font-medium transition-colors shadow-md"
+          >
+            <span>Guardar en el sobre</span>
+            <span>✉</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  function initLoveLetter() {
+    const envelope = document.getElementById('envelope-container');
+    const flap = document.getElementById('envelope-flap');
+    const seal = document.getElementById('wax-seal');
+    const modal = document.getElementById('letter-modal');
+    const sheet = document.getElementById('letter-sheet');
+    const closeBtn = document.getElementById('close-letter-btn');
+    const foldBtn = document.getElementById('fold-letter-btn');
+
+    if (!envelope || !flap || !seal || !modal || !sheet) return;
+
+    function openEnvelope() {
+      // 1. Abrir solapa 3D
+      flap.style.transform = 'rotateX(180deg)';
+      flap.style.zIndex = '5';
+      seal.style.transform = 'translate(-50%, -50%) scale(0)';
+      seal.style.opacity = '0';
+
+      // 2. Mostrar la carta desplegada suavemente
+      setTimeout(() => {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+        sheet.classList.remove('scale-90', 'translate-y-10');
+        sheet.classList.add('scale-100', 'translate-y-0');
+        document.body.style.overflow = 'hidden';
+      }, 500);
+    }
+
+    function closeEnvelope() {
+      modal.classList.remove('opacity-100', 'pointer-events-auto');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      sheet.classList.remove('scale-100', 'translate-y-0');
+      sheet.classList.add('scale-90', 'translate-y-10');
+      document.body.style.overflow = '';
+
+      setTimeout(() => {
+        flap.style.transform = 'rotateX(0deg)';
+        flap.style.zIndex = '20';
+        seal.style.transform = 'translate(-50%, -50%) scale(1)';
+        seal.style.opacity = '1';
+      }, 300);
+    }
+
+    envelope.addEventListener('click', openEnvelope);
+    closeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeEnvelope();
+    });
+    foldBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeEnvelope();
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeEnvelope();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) {
+        closeEnvelope();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLoveLetter);
+  } else {
+    initLoveLetter();
+  }
+</script>

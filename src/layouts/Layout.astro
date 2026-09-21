@@ -1,0 +1,82 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Nuestra Historia de Amor | Feliz Día del Amor",
+  description = "Una experiencia interactiva y romántica dedicada a nuestros momentos más hermosos juntos.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#12070e" />
+
+    <!-- Google Fonts: Cormorant Garamond, Playfair Display, Plus Jakarta Sans, Caveat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-romance-darkest text-romance-pearl antialiased font-sans selection:bg-romance-rose selection:text-white overflow-x-hidden min-h-screen relative">
+    <slot />
+
+    <style is:global>
+      /* Custom luxury scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0d040a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #781d39, #d4697d, #e0a96d);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #f3c68f;
+      }
+
+      /* 3D Perspective setup for tilt effects */
+      .perspective-1000 {
+        perspective: 1000px;
+      }
+      .perspective-2000 {
+        perspective: 2000px;
+      }
+      .preserve-3d {
+        transform-style: preserve-3d;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
+      }
+
+      /* Subtle romantic blur glows */
+      .glow-filter {
+        filter: drop-shadow(0 0 15px rgba(212, 105, 125, 0.4));
+      }
+
+      /* Glassmorphism utility */
+      .glass-panel {
+        background: rgba(28, 11, 22, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(224, 169, 109, 0.15);
+      }
+    </style>
+  </body>
+</html>

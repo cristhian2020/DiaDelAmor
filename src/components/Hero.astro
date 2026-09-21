@@ -1,0 +1,72 @@
+---
+import { storyData } from '../data/story';
+
+const { hero, couple } = storyData;
+---
+
+<header class="relative min-h-[92vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+  <!-- Círculos de luz ambiental de fondo -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-romance-wine/25 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none animate-pulse-glow"></div>
+  <div class="absolute bottom-10 right-1/4 w-[250px] sm:w-[450px] h-[250px] sm:h-[450px] bg-romance-rose/15 rounded-full blur-[100px] pointer-events-none"></div>
+
+  <div class="relative z-10 max-w-4xl mx-auto text-center flex flex-col items-center pt-8 pb-16">
+    <!-- Badge de Nombres -->
+    <div class="hero-anim inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-romance-card/80 border border-romance-gold/30 shadow-glow-gold/10 backdrop-blur-md mb-8">
+      <span class="w-1.5 h-1.5 rounded-full bg-romance-gold animate-ping"></span>
+      <span class="text-xs uppercase tracking-[0.25em] text-romance-gold font-medium">
+        {couple.partner1} y {couple.partner2}
+      </span>
+      <span class="text-xs text-romance-rose">♥</span>
+    </div>
+
+    <!-- Título Principal -->
+    <h1 class="hero-anim font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal leading-[1.15] tracking-tight text-white mb-6">
+      Cada segundo a tu lado es <br class="hidden sm:inline" />
+      <span class="italic font-light bg-gradient-to-r from-romance-gold via-romance-blush to-romance-rose bg-clip-text text-transparent">
+        mi momento favorito
+      </span>
+    </h1>
+
+    <!-- Subtítulo -->
+    <p class="hero-anim max-w-2xl text-base sm:text-lg md:text-xl text-romance-blush/80 font-light leading-relaxed mb-10">
+      {hero.subtitle}
+    </p>
+
+    <!-- Botón interactivo de inicio -->
+    <div class="hero-anim flex flex-col sm:flex-row items-center gap-4">
+      <a
+        href="#contador"
+        class="group relative inline-flex items-center justify-center px-8 py-4 text-sm uppercase tracking-widest font-medium text-white overflow-hidden rounded-full shadow-lg hover:shadow-glow-rose transition-all duration-500"
+      >
+        <!-- Gradiente de fondo interactivo -->
+        <span class="absolute inset-0 bg-gradient-to-r from-romance-wine via-romance-burgundy to-romance-rose opacity-90 group-hover:opacity-100 transition-opacity"></span>
+        <span class="absolute inset-0 bg-gradient-to-r from-romance-rose via-romance-gold to-romance-rose opacity-0 group-hover:opacity-30 blur-md transition-opacity duration-500"></span>
+        <span class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-romance-accent to-transparent"></span>
+        
+        <!-- Contenido del botón -->
+        <span class="relative z-10 flex items-center gap-3">
+          <span>{hero.buttonText}</span>
+          <svg class="w-4 h-4 text-romance-accent group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </span>
+      </a>
+
+      <a
+        href="#carta"
+        class="inline-flex items-center gap-2 px-6 py-3.5 text-xs uppercase tracking-widest text-romance-gold/90 hover:text-white rounded-full hover:bg-white/5 border border-transparent hover:border-romance-gold/20 transition-all duration-300"
+      >
+        <span>Abrir Carta Especial</span>
+        <span class="text-sm">✉</span>
+      </a>
+    </div>
+
+    <!-- Indicador de desplazamiento sutil hacia abajo -->
+    <div class="mt-16 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+      <span class="text-[10px] tracking-[0.3em] uppercase text-romance-blush/70 font-light">Desliza para recordar</span>
+      <div class="w-5 h-8 rounded-full border border-romance-gold/40 flex items-start justify-center p-1">
+        <div class="w-1 h-2 rounded-full bg-romance-gold animate-bounce"></div>
+      </div>
+    </div>
+  </div>
+</header>

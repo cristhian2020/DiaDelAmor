@@ -1,0 +1,180 @@
+---
+// MusicPlayer.astro: Reproductor de música romántica con soporte para canción MP3 personalizada y sintetizador Web Audio API de respaldo
+import { storyData } from '../data/story';
+
+const music = storyData.music || {
+  title: "Nuestra Canción",
+  url: "/assets/musica.mp3",
+};
+---
+
+<div class="fixed top-3 right-3 sm:top-5 sm:right-5 z-50">
+  <button
+    id="music-toggle"
+    aria-label="Reproducir música romántica"
+    data-title={music.title}
+    data-url={music.url}
+    class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full glass-panel hover:border-romance-rose/50 transition-all duration-300 group shadow-lg hover:shadow-glow-rose/20 text-[11px] sm:text-xs tracking-wider uppercase font-medium text-romance-cream cursor-pointer"
+  >
+    <!-- Icono de nota musical / equalizer animado -->
+    <div class="relative w-4 h-4 flex items-center justify-center">
+      <span class="music-wave w-0.5 h-2 bg-romance-gold rounded-full transition-all duration-300 group-hover:bg-romance-rose"></span>
+      <span class="music-wave w-0.5 h-3.5 bg-romance-rose rounded-full mx-0.5 transition-all duration-300"></span>
+      <span class="music-wave w-0.5 h-1.5 bg-romance-gold rounded-full transition-all duration-300 group-hover:bg-romance-rose"></span>
+    </div>
+    <span id="music-text" class="text-romance-pearl/90 group-hover:text-white transition-colors max-w-[140px] sm:max-w-[200px] truncate">
+      {music.title || 'Música Romántica'}
+    </span>
+  </button>
+
+  <!-- Elemento HTML5 de Audio para tu archivo específico (.mp3, .m4a, .wav) -->
+  <audio id="romantic-custom-audio" src={music.url} loop preload="auto"></audio>
+</div>
+
+<script>
+  let isPlaying = false;
+  let useAudioElement = false;
+  let audioCtx: AudioContext | null = null;
+  let intervalId: number | null = null;
+
+  const toggleBtn = document.getElementById('music-toggle');
+  const musicText = document.getElementById('music-text');
+  const waves = document.querySelectorAll('.music-wave');
+  const audioElement = document.getElementById('romantic-custom-audio') as HTMLAudioElement | null;
+  const songTitle = toggleBtn?.dataset.title || 'Música Romántica';
+
+  // Escala pentatónica romántica suave (respaldo por si no se coloca archivo mp3)
+  const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+
+  function playGentleChime(ctx: AudioContext, freq: number) {
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.8);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 3.0);
+    } catch (e) {
+      console.warn('WebAudio error', e);
+    }
+  }
+
+  function startAmbientMelody() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioCtx = new AudioContextClass();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    let noteIndex = 0;
+    const melodyPattern = [0, 2, 4, 3, 5, 4, 2, 1, 0, 4, 5, 7, 5, 3, 2, 0];
+
+    playGentleChime(audioCtx, notes[melodyPattern[noteIndex]]);
+
+    intervalId = window.setInterval(() => {
+      if (!audioCtx || !isPlaying) return;
+      noteIndex = (noteIndex + 1) % melodyPattern.length;
+      playGentleChime(audioCtx, notes[melodyPattern[noteIndex]]);
+      
+      if (Math.random() > 0.6) {
+        const harmony = (melodyPattern[noteIndex] + 2) % notes.length;
+        setTimeout(() => {
+          if (audioCtx && isPlaying) playGentleChime(audioCtx, notes[harmony] * 0.5);
+        }, 150);
+      }
+    }, 1800);
+  }
+
+  function stopAmbientMelody() {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+  }
+
+  function updateVisuals(playing: boolean) {
+    if (playing) {
+      if (musicText) musicText.textContent = `Sonando ♪ ${songTitle}`;
+      waves.forEach((w, i) => {
+        (w as HTMLElement).style.animation = `pulse-wave 1.2s ease-in-out infinite ${i * 0.2}s`;
+      });
+    } else {
+      if (musicText) musicText.textContent = songTitle;
+      waves.forEach((w) => {
+        (w as HTMLElement).style.animation = 'none';
+      });
+    }
+  }
+
+  async function playMusic() {
+    if (isPlaying) return;
+    isPlaying = true;
+    let playedFile = false;
+
+    if (audioElement && audioElement.src) {
+      try {
+        audioElement.volume = 0.65;
+        await audioElement.play();
+        useAudioElement = true;
+        playedFile = true;
+      } catch (err) {
+        console.warn('No se pudo reproducir el archivo de audio directamente, usando melodía ambiental de respaldo:', err);
+        useAudioElement = false;
+      }
+    }
+
+    if (!playedFile) {
+      startAmbientMelody();
+    }
+
+    updateVisuals(true);
+  }
+
+  function pauseMusic() {
+    isPlaying = false;
+    if (audioElement) {
+      audioElement.pause();
+    }
+    stopAmbientMelody();
+    updateVisuals(false);
+  }
+
+  function togglePlay() {
+    if (isPlaying) {
+      pauseMusic();
+    } else {
+      playMusic();
+    }
+  }
+
+  toggleBtn?.addEventListener('click', togglePlay);
+
+  // Iniciar también cuando hace clic en "Descubrir nuestra historia" si no está sonando ya
+  const heroBtn = document.querySelector('a[href="#contador"]');
+  heroBtn?.addEventListener('click', () => {
+    if (!isPlaying) {
+      playMusic();
+    }
+  });
+
+  // Animación de las ondas de audio
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes pulse-wave {
+      0%, 100% { transform: scaleY(0.5); }
+      50% { transform: scaleY(1.5); }
+    }
+  `;
+  document.head.appendChild(style);
+</script>

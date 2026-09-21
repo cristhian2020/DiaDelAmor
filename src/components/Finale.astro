@@ -1,0 +1,107 @@
+---
+import { storyData } from '../data/story';
+
+const { finale, couple } = storyData;
+---
+
+<footer class="relative py-28 px-4 sm:px-6 lg:px-8 overflow-hidden z-10 text-center">
+  <!-- Círculo de resplandor suave -->
+  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] bg-romance-burgundy/30 rounded-full blur-[140px] pointer-events-none"></div>
+
+  <div class="max-w-3xl mx-auto relative z-10">
+    <!-- Icono de Corazón Latiente -->
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-romance-card border border-romance-gold/30 shadow-glow-gold/20 mb-8">
+      <span class="text-3xl text-romance-rose animate-bounce">♥</span>
+    </div>
+
+    <!-- Cita Romántica -->
+    <blockquote class="font-serif italic text-2xl sm:text-3xl md:text-4xl text-white font-normal leading-relaxed mb-6">
+      "{finale.quote}"
+    </blockquote>
+
+    <p class="text-xs uppercase tracking-[0.3em] text-romance-gold font-light mb-12">
+      — {finale.author} —
+    </p>
+
+    <!-- Botón de Confeti de Amor Interactivo -->
+    <div class="mb-16">
+      <button
+        id="celebrate-btn"
+        class="group relative inline-flex items-center justify-center gap-3 px-10 py-5 text-sm uppercase tracking-widest font-semibold text-white rounded-full overflow-hidden shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95"
+      >
+        <span class="absolute inset-0 bg-gradient-to-r from-romance-wine via-romance-burgundy to-romance-rose"></span>
+        <span class="absolute inset-0 bg-gradient-to-r from-romance-rose via-romance-gold to-romance-rose opacity-0 group-hover:opacity-40 blur-lg transition-opacity duration-500"></span>
+        <span class="relative z-10 flex items-center gap-3">
+          <span>{finale.buttonText}</span>
+          <span class="text-lg group-hover:scale-125 transition-transform duration-300">✨</span>
+        </span>
+      </button>
+      <p class="text-xs text-romance-blush/60 font-light mt-3">
+        Toca para celebrar juntos
+      </p>
+    </div>
+
+    <!-- Dedicatoria de Pie de Página -->
+    <div class="pt-10 border-t border-white/10 text-xs text-romance-pearl/60 font-light flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>
+        Hecho con amor para <strong class="text-romance-gold font-normal">{couple.partner1} y {couple.partner2}</strong>
+      </p>
+      <p class="text-romance-blush/40">
+        Feliz Día del Amor y la Amistad ♥
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  import confetti from 'canvas-confetti';
+
+  function initCelebration() {
+    const btn = document.getElementById('celebrate-btn');
+    if (!btn) return;
+
+    btn.addEventListener('click', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+      // 1. Explosión Rose Gold y Oro
+      confetti({
+        particleCount: 70,
+        spread: 80,
+        origin: { x, y },
+        colors: ['#e0a96d', '#d4697d', '#f3c68f', '#fcd5ce', '#ffffff'],
+        disableForReducedMotion: true,
+      });
+
+      // 2. Corazones y pétalos cayendo
+      setTimeout(() => {
+        confetti({
+          particleCount: 40,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: ['#781d39', '#d4697d', '#e0a96d'],
+        });
+        confetti({
+          particleCount: 40,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: ['#781d39', '#d4697d', '#e0a96d'],
+        });
+      }, 200);
+
+      // Efecto haptic suave si el móvil lo soporta
+      if (navigator.vibrate) {
+        navigator.vibrate([40, 60, 40]);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCelebration);
+  } else {
+    initCelebration();
+  }
+</script>

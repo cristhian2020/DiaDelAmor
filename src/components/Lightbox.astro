@@ -1,0 +1,257 @@
+---
+// Lightbox.astro: Modal de alta resolución para visualizar recuerdos y anécdotas
+---
+
+<div
+  id="lightbox-modal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-300"
+  aria-modal="true"
+  role="dialog"
+>
+  <!-- Botón de Cerrar -->
+  <button
+    id="lightbox-close"
+    aria-label="Cerrar ventana modal"
+    class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-colors duration-200"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <!-- Botón Anterior -->
+  <button
+    id="lightbox-prev"
+    aria-label="Foto anterior"
+    class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/50 hover:bg-white/20 text-white/80 hover:text-white backdrop-blur-md transition-all duration-200"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Botón Siguiente -->
+  <button
+    id="lightbox-next"
+    aria-label="Foto siguiente"
+    class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-black/50 hover:bg-white/20 text-white/80 hover:text-white backdrop-blur-md transition-all duration-200"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Contenedor de Contenido del Modal -->
+  <div
+    id="lightbox-content"
+    class="relative max-w-4xl w-full max-h-[92vh] flex flex-col md:flex-row bg-romance-card/95 border border-romance-gold/20 rounded-2xl overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300"
+  >
+    <!-- Imagen Principal -->
+    <div class="md:w-3/5 bg-black flex flex-col items-center justify-center relative overflow-hidden min-h-[280px] sm:min-h-[400px]">
+      <img
+        id="lightbox-img"
+        src=""
+        alt="Recuerdo ampliado"
+        class="w-full h-full max-h-[70vh] object-contain transition-opacity duration-300"
+      />
+
+      <!-- Barra de miniaturas si el recuerdo tiene varias fotos -->
+      <div
+        id="lightbox-gallery-bar"
+        class="absolute bottom-3 inset-x-0 flex items-center justify-center gap-2 px-3 py-1.5 z-20 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-full mx-auto w-fit max-w-[90%] overflow-x-auto"
+      >
+      </div>
+    </div>
+
+    <!-- Panel de Información y Dedicatoria -->
+    <div class="md:w-2/5 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto bg-gradient-to-b from-romance-night to-romance-darkest">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span id="lightbox-date" class="text-xs uppercase tracking-wider text-romance-gold font-medium px-2.5 py-1 rounded-full bg-romance-gold/10 border border-romance-gold/20">
+            Fecha
+          </span>
+          <span id="lightbox-counter" class="text-xs text-romance-blush/60 font-mono">
+            1 / 6
+          </span>
+        </div>
+
+        <h3 id="lightbox-title" class="font-serif text-2xl sm:text-3xl text-white font-normal mb-2 leading-snug">
+          Título del Recuerdo
+        </h3>
+
+        <p id="lightbox-location" class="text-xs uppercase tracking-wider text-romance-blush/70 mb-6 flex items-center gap-1.5 font-light">
+          <span>📍</span>
+          <span>Lugar</span>
+        </p>
+
+        <div class="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
+          <p class="text-[11px] uppercase tracking-widest text-romance-rose/90 font-medium mb-1">
+            Nuestra Anécdota
+          </p>
+          <p id="lightbox-note" class="font-handwriting text-2xl text-romance-cream leading-relaxed">
+            "Nota especial..."
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-romance-blush/50">
+        <span>Usa las flechas ← → para navegar</span>
+        <span>♥ Con amor</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface MemoryData {
+    title: string;
+    date: string;
+    location: string;
+    note: string;
+    images: string[];
+    currentPhotoIndex: number;
+  }
+
+  function initLightbox() {
+    const modal = document.getElementById('lightbox-modal');
+    const content = document.getElementById('lightbox-content');
+    const closeBtn = document.getElementById('lightbox-close');
+    const prevBtn = document.getElementById('lightbox-prev');
+    const nextBtn = document.getElementById('lightbox-next');
+
+    const img = document.getElementById('lightbox-img') as HTMLImageElement;
+    const title = document.getElementById('lightbox-title');
+    const date = document.getElementById('lightbox-date');
+    const loc = document.getElementById('lightbox-location');
+    const note = document.getElementById('lightbox-note');
+    const counter = document.getElementById('lightbox-counter');
+    const galleryBar = document.getElementById('lightbox-gallery-bar');
+
+    const cards = document.querySelectorAll('.polaroid-wrapper') as NodeListOf<HTMLElement>;
+    if (!modal || cards.length === 0) return;
+
+    const memories: MemoryData[] = [];
+    cards.forEach((card) => {
+      let images: string[] = [];
+      try {
+        images = JSON.parse(card.dataset.images || '[]');
+      } catch (e) {
+        if (card.dataset.image) images = [card.dataset.image];
+      }
+      if (images.length === 0 && card.dataset.image) {
+        images = [card.dataset.image];
+      }
+
+      memories.push({
+        title: card.dataset.title || '',
+        date: card.dataset.date || '',
+        location: card.dataset.location || '',
+        note: card.dataset.note || '',
+        images: images,
+        currentPhotoIndex: parseInt(card.dataset.currentPhoto || '0', 10) || 0,
+      });
+    });
+
+    let currentIndex = 0;
+
+    function renderSlide(index: number, photoIndex: number = 0) {
+      if (index < 0) index = memories.length - 1;
+      if (index >= memories.length) index = 0;
+      currentIndex = index;
+
+      const mem = memories[currentIndex];
+      if (photoIndex < 0) photoIndex = mem.images.length - 1;
+      if (photoIndex >= mem.images.length) photoIndex = 0;
+      mem.currentPhotoIndex = photoIndex;
+
+      const currentImgUrl = mem.images[photoIndex] || '';
+      if (img) img.src = currentImgUrl;
+      if (title) title.textContent = mem.title;
+      if (date) date.textContent = mem.date;
+      if (loc) loc.innerHTML = `<span>📍</span> <span>${mem.location}</span>`;
+      if (note) note.textContent = `"${mem.note}"`;
+      if (counter) {
+        const photoInfo = mem.images.length > 1 ? ` • Foto ${photoIndex + 1}/${mem.images.length}` : '';
+        counter.textContent = `${currentIndex + 1} / ${memories.length}${photoInfo}`;
+      }
+
+      // Render miniaturas si el recuerdo tiene más de una foto
+      if (galleryBar) {
+        galleryBar.innerHTML = '';
+        if (mem.images.length > 1) {
+          galleryBar.classList.remove('hidden');
+          mem.images.forEach((imgUrl, pIdx) => {
+            const thumbBtn = document.createElement('button');
+            thumbBtn.type = 'button';
+            thumbBtn.setAttribute('aria-label', `Ver foto ${pIdx + 1}`);
+            thumbBtn.className = `w-8 h-8 sm:w-9 sm:h-9 rounded-md overflow-hidden border-2 transition-all duration-200 shrink-0 ${
+              pIdx === photoIndex
+                ? 'border-romance-gold scale-110 shadow-md shadow-black/80 opacity-100 ring-2 ring-amber-300/30'
+                : 'border-white/30 hover:border-white/70 opacity-60 hover:opacity-100'
+            }`;
+            thumbBtn.innerHTML = `<img src="${imgUrl}" alt="Foto ${pIdx + 1}" class="w-full h-full object-cover" />`;
+            thumbBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              renderSlide(currentIndex, pIdx);
+            });
+            galleryBar.appendChild(thumbBtn);
+          });
+        } else {
+          galleryBar.classList.add('hidden');
+        }
+      }
+    }
+
+    function openModal(index: number) {
+      const card = cards[index];
+      const startPhotoIdx = parseInt(card?.dataset.currentPhoto || '0', 10) || 0;
+      renderSlide(index, startPhotoIdx);
+      modal?.classList.remove('opacity-0', 'pointer-events-none');
+      modal?.classList.add('opacity-100', 'pointer-events-auto');
+      content?.classList.remove('scale-95');
+      content?.classList.add('scale-100');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal?.classList.remove('opacity-100', 'pointer-events-auto');
+      modal?.classList.add('opacity-0', 'pointer-events-none');
+      content?.classList.remove('scale-100');
+      content?.classList.add('scale-95');
+      document.body.style.overflow = '';
+    }
+
+    cards.forEach((card, idx) => {
+      card.addEventListener('click', () => openModal(idx));
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSlide(currentIndex - 1, 0);
+    });
+
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSlide(currentIndex + 1, 0);
+    });
+
+    // Navegación con teclado (Escape, Flechas)
+    window.addEventListener('keydown', (e) => {
+      if (modal.classList.contains('pointer-events-none')) return;
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowLeft') renderSlide(currentIndex - 1, 0);
+      if (e.key === 'ArrowRight') renderSlide(currentIndex + 1, 0);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLightbox);
+  } else {
+    initLightbox();
+  }
+</script>

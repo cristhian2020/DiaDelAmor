@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BackgroundParticles from '../components/BackgroundParticles.astro';
+import MusicPlayer from '../components/MusicPlayer.astro';
+import Hero from '../components/Hero.astro';
+import Counter from '../components/Counter.astro';
+import Timeline from '../components/Timeline.astro';
+import ReasonsGrid from '../components/ReasonsGrid.astro';
+import LoveLetter from '../components/LoveLetter.astro';
+import Finale from '../components/Finale.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { storyData } from '../data/story';
+
+const pageTitle = `${storyData.couple.partner1} y ${storyData.couple.partner2} | Nuestra Historia`;
+---
+
+<Layout title={pageTitle}>
+  <!-- Fondo de partículas flotantes y pétalos -->
+  <BackgroundParticles />
+
+  <!-- Reproductor de música romántica ambiental -->
+  <MusicPlayer />
+
+  <!-- Contenido principal -->
+  <main class="relative z-10">
+    <Hero />
+    
+    <!-- Separador decorativo -->
+    <div class="flex items-center justify-center gap-4 max-w-xs mx-auto my-6 opacity-30">
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent to-romance-gold"></div>
+      <span class="text-xs text-romance-gold">✦</span>
+      <div class="h-px flex-1 bg-gradient-to-l from-transparent to-romance-gold"></div>
+    </div>
+
+    <Counter />
+
+    <!-- Separador decorativo -->
+    <div class="flex items-center justify-center gap-4 max-w-xs mx-auto my-6 opacity-30">
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent to-romance-gold"></div>
+      <span class="text-xs text-romance-gold">✦</span>
+      <div class="h-px flex-1 bg-gradient-to-l from-transparent to-romance-gold"></div>
+    </div>
+
+    <Timeline />
+
+    <!-- Separador decorativo -->
+    <div class="flex items-center justify-center gap-4 max-w-xs mx-auto my-6 opacity-30">
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent to-romance-gold"></div>
+      <span class="text-xs text-romance-gold">✦</span>
+      <div class="h-px flex-1 bg-gradient-to-l from-transparent to-romance-gold"></div>
+    </div>
+
+    <ReasonsGrid />
+
+    <!-- Separador decorativo -->
+    <div class="flex items-center justify-center gap-4 max-w-xs mx-auto my-6 opacity-30">
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent to-romance-gold"></div>
+      <span class="text-xs text-romance-gold">✦</span>
+      <div class="h-px flex-1 bg-gradient-to-l from-transparent to-romance-gold"></div>
+    </div>
+
+    <LoveLetter />
+
+    <Finale />
+  </main>
+
+  <!-- Modal Lightbox para fotos Polaroid -->
+  <Lightbox />
+</Layout>
+
+<script>
+  // Revelaciones suaves al scroll usando IntersectionObserver
+  function setupScrollAnimations() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100', 'translate-y-0');
+            entry.target.classList.remove('opacity-0', 'translate-y-10');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    const animatedElements = document.querySelectorAll(
+      '#contador, #momentos, #razones, #carta'
+    );
+
+    animatedElements.forEach((el) => {
+      el.classList.add('opacity-0', 'translate-y-10', 'transition-all', 'duration-1000', 'ease-out');
+      observer.observe(el);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupScrollAnimations);
+  } else {
+    setupScrollAnimations();
+  }
+</script>
